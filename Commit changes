@@ -1,0 +1,35 @@
+name: Jarvis APK Derleyici
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Depoyu Klonla
+      uses: actions/checkout@v4
+      
+    - name: ZIP Dosyasını Çıkart
+      run: |
+        unzip jarvis-android-project.zip -d jarvis_project
+        
+    - name: Java 17 Kurulumu
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Çalıştırma İzni Ver
+      run: chmod +x ./jarvis_project/gradlew
+      
+    - name: APK'yı Derle
+      run: cd jarvis_project && ./gradlew assembleDebug
+      
+    - name: APK'yı İndirmeye Hazırla
+      uses: actions/upload-artifact@v3
+      with:
+        name: jarvis-app-debug
+        path: jarvis_project/app/build/outputs/apk/debug/app-debug.apk
